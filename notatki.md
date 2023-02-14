@@ -273,4 +273,35 @@ public class JwtUtils {
     }
 }
 ```
+  
+### Rejestrowanie filtra w config
 
+Nasz nowy filtr rejestrujemy z pomocą metody ``addFilterBefore`` wskazując naszą klasę oraz tę, przed która ma zostać wywoałana.
+
+
+```
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@EnableWebSecurity
+public class SecurityConfig {
+
+    private final JwtAuthFilter jwtAuthFilter;
+
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
+
+    @Bean
+     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests().anyRequest().authenticated();
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+}
+```
+
+### UserDetailsService
