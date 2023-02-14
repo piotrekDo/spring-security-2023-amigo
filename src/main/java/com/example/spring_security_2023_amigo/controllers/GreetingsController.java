@@ -1,4 +1,4 @@
-package com.example.spring_security_2023_amigo;
+package com.example.spring_security_2023_amigo.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
