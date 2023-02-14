@@ -345,3 +345,5 @@ W metodzie zwracającej providera możemy ustawić szerg rzeczy jak serwis czy p
         return new  BCryptPasswordEncoder();
     }
 ```
+
+## Ustawienia endpointów

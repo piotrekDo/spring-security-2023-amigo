@@ -1,5 +1,6 @@
 package com.example.spring_security_2023_amigo.config;
 
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,21 +16,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserService userService, PasswordEncoder passwordEncoder) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests().anyRequest().authenticated();
+        http.csrf().disable();
+        http.authorizeRequests().antMatchers("/api/v1/auth/**").permitAll();
+        http.authorizeRequests().anyRequest().authenticated();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
