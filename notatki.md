@@ -305,3 +305,6 @@ public class SecurityConfig {
 ```
 
 ### UserDetailsService
+
+UserDetailsService jest interfejsem dostarczającym sprngowi potrzebne metody. Musimy utworzyć jego implementację. Można 
+to zrobić poprzez stworzenie klasy lub Beana. Jedyną metoda, którą musimy nadpisać jest ``loadUserByUsername```
