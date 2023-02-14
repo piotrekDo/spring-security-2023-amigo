@@ -307,4 +307,41 @@ public class SecurityConfig {
 ### UserDetailsService
 
 UserDetailsService jest interfejsem dostarczającym sprngowi potrzebne metody. Musimy utworzyć jego implementację. Można 
-to zrobić poprzez stworzenie klasy lub Beana. Jedyną metoda, którą musimy nadpisać jest ``loadUserByUsername```
+to zrobić poprzez stworzenie klasy lub Beana. Jedyną metoda, którą musimy nadpisać jest ``loadUserByUsername```. Przykładowy bean
+wykorzystujący zapisaną 'na sztywno' listę z użytkownikami zamiast bazy danych. 
+```
+    @Bean
+    public UserDetailsService userDetailsService(){
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+                return APPLICATION_USERS.stream().filter(u -> u.getUsername().equals(email)).findFirst().orElseThrow();
+            }
+        };
+    }
+```
+
+Następnie musimy zarejestrować nasz serwis jak poniżej. Dodajemy odpowiednią linjkę ustaiająca ``authenticationProvider``.
+W metodzie zwracającej providera możemy ustawić szerg rzeczy jak serwis czy password encoder używany w ramach aplikacji. 
+```
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests().anyRequest().authenticated();
+        http.authenticationProvider(authenticationProvider());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+    @Bean
+     AuthenticationProvider authenticationProvider() {
+        final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        return authenticationProvider;
+    }
+    
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new  BCryptPasswordEncoder();
+    }
+```
